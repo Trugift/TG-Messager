@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TG Messenger - Two-Way Messaging Platform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <a href="#" class="logo">
+                    <div class="logo-square"></div>
+                    <h1>TG Messenger</h1>
+                </a>
+                <nav>
+                    <button class="nav-btn active" onclick="switchPage('messages')">💬 Messages</button>
+                    <button class="nav-btn" onclick="switchPage('compose')">✏️ Compose</button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <!-- Owner Phone Number Section -->
+            <div class="owner-phone-section">
+                <label class="owner-phone-label">Your Phone Number</label>
+                <div class="owner-phone-display" id="ownerPhoneDisplay">+1 (555) 000-0000</div>
+                <button class="owner-phone-edit-btn" onclick="openOwnerPhoneModal()">✏️ Edit</button>
+            </div>
+
+            <!-- Contacts Section -->
+            <h3>Contacts</h3>
+            <div class="contact-list" id="contactList"></div>
+            <button class="add-contact-btn" onclick="openAddContactModal()">+ Add Contact</button>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+            <!-- MESSAGES PAGE -->
+            <div id="messagesPage" class="page active">
+                <div class="chat-container">
+                    <div class="chat-header">
+                        <h2 id="chatName">Select a contact</h2>
+                        <p id="chatPhone"></p>
+                    </div>
+                    <div class="messages-area" id="messagesArea"></div>
+                    <div class="input-area">
+                        <div class="input-row">
+                            <textarea id="messageInput" placeholder="Type your message..."></textarea>
+                        </div>
+                        <div class="file-list" id="fileList"></div>
+                        <div class="input-row">
+                            <div class="file-input-wrapper">
+                                <button class="file-input-btn" onclick="document.getElementById('fileInput').click()">📎 Attach</button>
+                                <input type="file" id="fileInput" multiple onchange="handleFileSelect(event)">
+                            </div>
+                            <button class="btn-send" onclick="sendMessage()">Send</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- COMPOSE PAGE -->
+            <div id="composePage" class="page">
+                <div class="compose-container">
+                    <h2>Compose Message</h2>
+
+                    <div class="form-group">
+                        <label>Delivery Channel</label>
+                        <div class="channel-selector">
+                            <label class="channel-option">
+                                <input type="radio" name="channel" value="sms" checked>
+                                SMS
+                            </label>
+                            <label class="channel-option">
+                                <input type="radio" name="channel" value="mms">
+                                MMS
+                            </label>
+                            <label class="channel-option">
+                                <input type="radio" name="channel" value="email">
+                                EMAIL
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <div class="form-group">
+                        <label>Recipient</label>
+                        <input type="tel" id="composeRecipient" placeholder="Enter phone number or email">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Subject (Email only)</label>
+                        <input type="text" id="composeSubject" placeholder="Message subject">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Message</label>
+                        <textarea id="composeMessage" placeholder="Type your message..."></textarea>
+                        <p style="font-size: 12px; color: var(--gray-medium); margin-top: 8px;" id="charCount">0 characters</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Attachments</label>
+                        <div class="file-upload-area" id="composeFileUploadArea" ondrop="handleComposeDrop(event)" ondragover="handleComposeDragOver(event)" ondragleave="handleComposeDragLeave(event)" onclick="document.getElementById('composeFileInput').click()">
+                            <span class="upload-text">📤 Drag files here or click to select</span>
+                            <p class="upload-hint">Supported: Images, Videos, PDFs, Documents (Max 25MB per file)</p>
+                            <input type="file" id="composeFileInput" multiple style="display: none;" onchange="handleComposeFileSelect(event)">
+                        </div>
+                        <div class="file-list" id="composeFileList"></div>
+                    </div>
+
+                    <button class="btn-send" style="width: 100%; padding: 20px;" onclick="sendComposeMessage()">Send Message</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- MODALS -->
+    <!-- Add Contact Modal -->
+    <div id="addContactModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">Add New Contact</div>
+            <div class="modal-body">
+                <label style="margin-bottom: 12px;">Contact Name</label>
+                <input type="text" id="contactName" placeholder="e.g., John Doe" style="width: 100%; margin-bottom: 16px;">
+                <label style="margin-bottom: 12px;">Phone Number or Email</label>
+                <input type="tel" id="contactPhone" placeholder="e.g., +1 (555) 123-4567">
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-secondary" onclick="closeAddContactModal()">Cancel</button>
+                <button class="modal-btn modal-btn-primary" onclick="saveContact()">Add Contact</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Owner Phone Modal -->
+    <div id="ownerPhoneModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">Your Phone Number</div>
+            <div class="modal-body">
+                <label style="margin-bottom: 12px;">Enter your phone number</label>
+                <input type="tel" id="ownerPhoneInput" placeholder="e.g., +1 (555) 123-4567">
+                <p style="font-size: 12px; color: var(--gray-medium); margin-top: 12px;">This is the phone number people will see when you send them messages.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-secondary" onclick="closeOwnerPhoneModal()">Cancel</button>
+                <button class="modal-btn modal-btn-primary" onclick="saveOwnerPhone()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Contact Confirmation Modal -->
+    <div id="deleteContactModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">Delete Contact</div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete <strong id="deleteContactName"></strong>? This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-secondary" onclick="closeDeleteContactModal()">Cancel</button>
+                <button class="modal-btn modal-btn-primary" onclick="confirmDeleteContact()" style="background-color: var(--error);">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
